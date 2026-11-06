@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#12272a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Media Monti Savonesi</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12272a; --panel:#1b3337; --line:#2b4a4f; --ink:#f4f7f7; --muted:#C9DBDB; --accent:#F5C374; --deep:#353C4C;
+  --ok:#5fd08a; --late:#ff6b5f; --early:#F5C374;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Hanken Grotesk',-apple-system,system-ui,sans-serif;font-size:16px}
+body{padding:env(safe-area-inset-top) 14px calc(env(safe-area-inset-bottom) + 20px);max-width:560px;margin:0 auto}
+h1,.anton{font-family:'Anton','Impact',sans-serif;font-weight:400;letter-spacing:.02em}
+.mono{font-variant-numeric:tabular-nums}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 0 6px}
+header h1{font-size:20px;margin:0;color:var(--accent);text-transform:uppercase}
+#gps{font-size:13px;color:var(--muted)}
+#gps b{display:inline-block;width:9px;height:9px;border-radius:50%;background:#777;margin-right:6px}
+#gps.good b{background:var(--ok)} #gps.mid b{background:var(--early)} #gps.bad b{background:var(--late)}
+#wake{font-size:12px;color:var(--late);margin:-2px 0 4px}
+#wake.on{color:var(--ok)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:8px 12px;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;font:600 14px 'Hanken Grotesk',sans-serif}
+.tab.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.tab small{display:block;font-weight:400;font-size:10px;opacity:.8}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 10px}
+#status{border-radius:14px;padding:14px 16px;background:var(--panel);border:2px solid var(--line);text-align:center}
+#status .lab{font:400 26px 'Anton',Impact,sans-serif;letter-spacing:.03em;text-transform:uppercase}
+#status .delta{font:400 64px/1.05 'Anton',Impact,sans-serif}
+#status .hint{font-size:14px;color:var(--muted);min-height:20px}
+#status.ok{border-color:var(--ok)} #status.ok .lab,#status.ok .delta{color:var(--ok)}
+#status.late{border-color:var(--late)} #status.late .lab,#status.late .delta{color:var(--late)}
+#status.early{border-color:var(--early)} #status.early .lab,#status.early .delta{color:var(--early)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.cell{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cell .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.cell .v{font:600 30px/1.1 'Hanken Grotesk',sans-serif;font-variant-numeric:tabular-nums}
+.cell .u{font-size:13px;color:var(--muted);font-weight:400}
+.cell.big{grid-column:span 2}
+.cell.big .v{font-size:42px}
+.bar{position:relative;height:16px;border-radius:8px;background:var(--panel);border:1px solid var(--line);margin:6px 0 4px;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.9}
+.bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);text-decoration:none}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+button{font:800 18px 'Hanken Grotesk',sans-serif;border:0;border-radius:12px;padding:16px 10px;color:var(--bg);background:var(--accent)}
+button.sec{background:var(--deep);color:var(--ink);font-weight:600;font-size:15px;padding:13px 8px}
+button.go{grid-column:span 2;font-size:30px;padding:22px 10px;background:var(--ok)}
+button.go.stop{background:var(--late)}
+button:active{transform:scale(.98)}
+details{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+summary{font-weight:600;color:var(--muted)}
+label{display:block;margin:10px 0 4px;color:var(--muted);font-size:13px}
+select,input{width:100%;padding:11px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 16px 'Hanken Grotesk',sans-serif}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+td,th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:400;font-size:12px}
+.note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.4}
+</style>
+</head>
+<body>
+<header>
+  <h1>Media · Monti Savonesi</h1>
+  <div id="gps"><b></b><span>GPS</span></div>
+</header>
+<div id="wake">☾ tocca lo schermo</div>
+<div class="tabs" id="tabs"></div>
+<div class="sub" id="sub"></div>
+
+<div id="status"><div class="lab" id="stLab">In attesa</div><div class="delta mono" id="stDelta">--</div><div class="hint" id="stHint">Premi VIA sulla linea di partenza</div></div>
+
+<div class="grid">
+  <div class="cell big"><div class="k">Media attuale dalla partenza</div><div class="v mono" id="vAvg">--<span class="u"> km/h</span></div></div>
+  <div class="cell"><div class="k">Media da tenere</div><div class="v mono" id="vTarget">--<span class="u"> km/h</span></div></div>
+  <div class="cell"><div class="k">Tieni ora</div><div class="v mono" id="vKeep">--<span class="u"> km/h</span></div></div>
+  <div class="cell"><div class="k">Velocità istantanea</div><div class="v mono" id="vInst">--<span class="u"> km/h</span></div></div>
+  <div class="cell"><div class="k">Tempo</div><div class="v mono" id="vTime">0:00.0</div></div>
+  <div class="cell"><div class="k">Distanza</div><div class="v mono" id="vDist">0,000<span class="u"> km</span></div></div>
+  <div class="cell"><div class="k">Prossimo cambio</div><div class="v mono" id="vNext">--</div></div>
+</div>
+<div class="bar" id="bar"><i id="barFill" style="width:0"></i></div>
+
+<div class="btns">
+  <button class="go" id="btnGo">VIA</button>
+  <button class="sec" id="btnSync">Sono al cambio media</button>
+  <button class="sec" id="btnReset">Azzera</button>
+  <button class="sec" id="btnMinus">−10 m</button>
+  <button class="sec" id="btnPlus">+10 m</button>
+</div>
+
+<details id="calBox">
+  <summary>Calibra · coefficiente <span class="mono" id="kNow">1,0000</span></summary>
+  <p class="note" style="margin-top:8px">Percorri una distanza nota e confronta. In gara c'è l'étalonnage ufficiale di <b>4,042 km</b> sulla SS582 da Cisano sul Neva (km 30) a Zuccarello (km 26), fra le due linee arancioni con scritta ET. Per una prova va bene anche la distanza fra due cartelli chilometrici. Premi INIZIA sulla prima linea e FINE sulla seconda, senza fermarti in mezzo.</p>
+  <label for="calRef">Distanza nota (km)</label>
+  <input id="calRef" type="number" step="0.001" value="4.042" inputmode="decimal">
+  <div class="btns">
+    <button class="go" id="calGo" style="font-size:22px;padding:16px">INIZIA</button>
+  </div>
+  <div class="grid">
+    <div class="cell"><div class="k">Misurati dal GPS</div><div class="v mono" id="calRaw">0,000<span class="u"> km</span></div></div>
+    <div class="cell"><div class="k">Coefficiente</div><div class="v mono" id="calK">--</div></div>
+  </div>
+  <div class="btns">
+    <button class="sec" id="calApply">Usa questo coefficiente</button>
+    <button class="sec" id="calClear">Torna a 1,0000</button>
+  </div>
+</details>
+<details>
+  <summary>Impostazioni</summary>
+  <label for="cat">Categoria</label>
+  <select id="cat">
+    <option value="0">60 media alta</option>
+    <option value="1" selected>60 media bassa</option>
+    <option value="2">50 media alta</option>
+    <option value="3">50 media bassa</option>
+  </select>
+  <label for="off">Mio scarto dal primo concorrente (minuti, solo per gli orari)</label>
+  <input id="off" type="number" step="1" value="0" inputmode="numeric">
+</details>
+<details>
+  <summary>Medie imposte della prova</summary>
+  <table id="tbl"></table>
+</details>
+
+<p class="note">Scarto in secondi rispetto al tempo ideale. Con il + sei sopra media (in anticipo, giallo): rallenta. Con il − sei sotto media (in ritardo, rosso): accelera. Il cronometro va sempre, anche senza GPS. Se il segnale si perde, l'app continua a contare i metri alla velocità che avevi e, quando il GPS torna, rimette la distanza reale. Il GPS sbaglia di qualche metro sotto gli alberi e in galleria: usa "Sono al cambio media" quando passi il punto indicato dalla circolare e "−10 m / +10 m" per correggere alla fine. Orari del primo concorrente da circolare informativa n. 1 del 4 novembre 2026.</p>
+
+<script>
+/* ===== DATI (Circolare informativa n. 1 del 4/11/2026) ===== */
+/* v: medie per categoria [60 alta, 60 bassa, 50 alta, 50 bassa]; to = km di fine tratto */
+const PM = [
+ {id:1, day:'sabato',  date:'2026-11-07', name:'Colle Scravaion', km:10.375, ril:12, start:'15:39', segs:[{to:10.375, v:[58,54,49,46]}]},
+ {id:2, day:'sabato',  date:'2026-11-07', name:'Colle Scravaion', km:10.375, ril:12, start:'18:33', segs:[{to:10.375, v:[56,52,47,44]}]},
+ {id:3, day:'domenica',date:'2026-11-08', name:'Caso-Paravenna',  km:12.307, ril:12, start:'07:59', segs:[{to:3.867,v:[58.5,54.5,48.5,46.5]},{to:10.488,v:[56.5,53,46.5,44.5]},{to:12.307,v:[54,51,44,42]}]},
+ {id:4, day:'domenica',date:'2026-11-08', name:'Onzo',            km:7.268,  ril:8,  start:'08:53', segs:[{to:5.195,v:[56,54,46,44]},{to:7.268,v:[58,56,48,46]}]},
+ {id:5, day:'domenica',date:'2026-11-08', name:'Caso-Paravenna',  km:12.307, ril:12, start:'10:50', segs:[{to:3.867,v:[58,55,49,47]},{to:10.488,v:[57,54,47,45]},{to:12.307,v:[53,51,45,43]}]},
+ {id:6, day:'domenica',date:'2026-11-08', name:'Onzo',            km:7.268,  ril:8,  start:'11:49', segs:[{to:5.195,v:[57.5,55.5,47,45]},{to:7.268,v:[58.5,57,49,47]}]},
+ {id:7, day:'domenica',date:'2026-11-08', name:'Caso-Paravenna',  km:12.307, ril:12, start:'13:46', segs:[{to:3.867,v:[57,54,48,46]},{to:10.488,v:[56,52,46,44]},{to:12.307,v:[52,50,43,41]}]},
+ {id:8, day:'domenica',date:'2026-11-08', name:'Onzo',            km:7.268,  ril:8,  start:'14:40', segs:[{to:5.195,v:[57,55,46.5,44.5]},{to:7.268,v:[58,57,48.5,46.5]}]}
+];
+
+/* ===== LOGICA PURA ===== */
+function segsFor(pm, cat){ let from=0; return pm.segs.map(s=>{const o={from, to:s.to, v:s.v[cat]}; from=s.to; return o;}); }
+function targetTime(segs, dKm){            /* secondi ideali alla distanza dKm */
+  let t=0; for(const s of segs){ const len=Math.min(dKm,s.to)-s.from; if(len<=0) break; t+=len/s.v*3600; } return t; }
+function targetAt(segs, dKm){ for(const s of segs){ if(dKm<s.to) return s; } return segs[segs.length-1]; }
+function nextChange(segs, dKm){ for(let i=0;i<segs.length-1;i++){ if(dKm<segs[i].to) return {km:segs[i].to, idx:i}; } return null; }
+function haversine(a,b,c,d){ const R=6371000,r=Math.PI/180,dl=(c-a)*r,dg=(d-b)*r;
+  const x=Math.sin(dl/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dg/2)**2; return 2*R*Math.asin(Math.sqrt(x)); }
+function fmtT(s){ s=Math.max(0,s); const m=Math.floor(s/60), r=s-m*60; return m+':'+(r<10?'0':'')+r.toFixed(1); }
+function fmtKm(x){ return x.toFixed(3).replace('.',','); }
+function fmtV(x){ return (isFinite(x)?x.toFixed(1):'--').replace('.',','); }
+function addMin(hhmm, m){ const [h,mi]=hhmm.split(':').map(Number); let t=(h*60+mi+m+1440)%1440; return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function judge(deltaS, tol){ return deltaS>tol?'late':(deltaS<-tol?'early':'ok'); }
+</script>
+
+<script>
+/* ===== STATO ===== */
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let cur=null, cat=+store.get('cat',1), off=+store.get('off',0);
+let run={state:'idle', t0:0, dist:0, last:null, speed:0, lastFixT:0, finishT:0, hist:[]};
+let K=+store.get('k',1)||1;                  /* coefficiente di calibrazione: km veri / km GPS */
+let cal={on:false, raw:0};                   /* misura di calibrazione in corso (km GPS grezzi) */
+const TOL=1.0;          /* secondi di tolleranza per "nella media" */
+const MAX_ACC=100;      /* metri: oltre, il fix è inutilizzabile e si continua a stimare */
+const MAX_MS=70;        /* m/s: salti più veloci sono errori del GPS */
+const DR_MAX=90;        /* secondi di stima senza GPS (velocità costante) */
+
+function pickDefault(){
+  const now=new Date(), iso=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const hm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  let c=PM.filter(p=>p.date===iso); if(!c.length) return PM[0];
+  const next=c.find(p=>addMin(p.start,off)>=hm); return next||c[c.length-1];
+}
+function select(id){
+  cur=PM.find(p=>p.id===id); resetRun(); render(); store.set('pm',id);
+}
+function resetRun(){ run={state:'idle', t0:0, dist:0, last:run.last, speed:0, lastFixT:0, finishT:0, hist:[]}; }
+function segs(){ return segsFor(cur,cat); }
+
+/* ===== RENDER STATICO ===== */
+function render(){
+  $('tabs').innerHTML=PM.map(p=>`<button class="tab${p.id===cur.id?' on':''}" data-id="${p.id}">PM${p.id}<small>${p.day==='sabato'?'sab':'dom'} · ${p.name.split('-')[0].split(' ')[0]}</small></button>`).join('');
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>select(+b.dataset.id));
+  $('sub').textContent=`PM${cur.id} ${cur.name} · ${fmtKm(cur.km)} km · ${cur.ril} rilevamenti · ${cur.day} 7/8 nov · primo concorrente ${cur.start}${off?' · tuo '+addMin(cur.start,off):''}`.replace('7/8',cur.date.endsWith('07')?'7':'8');
+  const ss=segs();
+  $('tbl').innerHTML='<tr><th>Tratto km</th><th>Media</th><th>Tempo ideale</th></tr>'+ss.map(s=>`<tr><td>${fmtKm(s.from)} - ${fmtKm(s.to)}</td><td class="mono">${fmtV(s.v)} km/h</td><td class="mono">${fmtT((s.to-s.from)/s.v*3600)}</td></tr>`).join('')+`<tr><td><b>Totale</b></td><td></td><td class="mono"><b>${fmtT(targetTime(ss,cur.km))}</b></td></tr>`;
+  $('bar').querySelectorAll('u').forEach(x=>x.remove());
+  ss.slice(0,-1).forEach(s=>{const u=document.createElement('u'); u.style.left=(s.to/cur.km*100)+'%'; $('bar').appendChild(u);});
+  $('btnGo').textContent=run.state==='running'?'FINE':'VIA';
+  $('btnGo').classList.toggle('stop',run.state==='running');
+  $('cat').value=cat; $('off').value=off;
+  tick();
+}
+
+/* ===== GPS ===== */
+function onPos(p){
+  const c=p.coords, now=Date.now();
+  const acc=c.accuracy||999;
+  lastAcc=acc;
+  if(acc>MAX_ACC) return;
+  let v=(c.speed!=null&&!isNaN(c.speed))?c.speed:null;      /* m/s */
+  let moved=true;
+  if(run.last){
+    const d=haversine(run.last.lat,run.last.lon,c.latitude,c.longitude), dt=(now-run.last.t)/1000;
+    if(dt>0 && d/dt>MAX_MS) return;                          /* salto impossibile: fix sbagliato */
+    if(v==null&&dt>0) v=d/dt;
+    if(d>=1.5){                                              /* anche dopo un buco: conta il tratto in linea retta */
+      if(run.state==='running') run.dist+=d/1000*K;
+      if(cal.on) cal.raw+=d/1000;
+    } else moved=false;                                      /* quasi fermo: il punto resta, così il rumore non somma metri */
+  }
+  if(moved) run.last={lat:c.latitude,lon:c.longitude,t:now};
+  run.speed=(v==null?0:v)*3.6; run.lastFixT=now;
+  run.hist.push({t:now,v:run.speed}); if(run.hist.length>8) run.hist.shift();
+}
+function onErr(e){ if(e.code===1){ const g=$('gps'); g.className='bad'; g.querySelector('span').textContent='GPS: permesso negato'; } }   /* timeout: watchPosition continua da solo */
+function startGps(){
+  if(!navigator.geolocation){ onErr({code:0}); return; }
+  navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+  keepAwake();
+}
+
+/* ===== SCHERMO SEMPRE ACCESO =====
+   Safari concede il blocco solo dopo un tocco e lo toglie quando l'app va in secondo piano:
+   lo richiediamo a ogni tocco e al ritorno in primo piano, finché è attivo. */
+let wake=null;
+async function keepAwake(){
+  if(!('wakeLock' in navigator)){ showWake(false,'non supportato'); return; }
+  if(wake && !wake.released) return;
+  try{ wake=await navigator.wakeLock.request('screen'); showWake(true);
+       wake.addEventListener('release',()=>{ showWake(false); if(document.visibilityState==='visible') setTimeout(keepAwake,500); }); }
+  catch(e){ showWake(false); }
+}
+function showWake(on,why){ const w=$('wake'); w.className=on?'on':''; w.textContent=on?'☀ schermo acceso':'☾ tocca lo schermo'+(why?' ('+why+')':''); }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') keepAwake(); });
+document.addEventListener('touchend',keepAwake,{passive:true});
+document.addEventListener('click',keepAwake);
+
+/* ===== AGGIORNAMENTO A SCHERMO ===== */
+function liveDist(){            /* distanza stimata: tra due fix, e nei buchi del GPS, prosegue alla velocità dell'ultimo fix */
+  if(run.state!=='running') return run.dist;
+  const gap=Math.min((Date.now()-run.lastFixT)/1000, DR_MAX);
+  return run.dist + (run.speed/3600)*gap*K;
+}
+let lastAcc=999;
+function gpsBadge(){
+  const g=$('gps'), s=g.querySelector('span'), age=(Date.now()-run.lastFixT)/1000;
+  if(!run.lastFixT){ g.className='bad'; s.textContent='GPS: cerco…'; return; }
+  if(age>3){ g.className='bad'; s.textContent='GPS perso da '+Math.round(age)+' s · stimo'; return; }
+  g.className=lastAcc<=10?'good':(lastAcc<=25?'mid':'bad'); s.textContent='GPS ±'+Math.round(lastAcc)+' m';
+}
+function tick(){
+  gpsBadge(); calRender();
+  const ss=segs(), total=cur.km;
+  const el=run.state==='idle'?0:((run.state==='finished'?run.finishT:Date.now())-run.t0)/1000;
+  const d=Math.min(liveDist(), total+0.5);
+  const seg=targetAt(ss,Math.min(d,total-1e-9));
+  const instAvg=run.hist.length?run.hist.reduce((a,b)=>a+b.v,0)/run.hist.length:run.speed;
+  $('vInst').innerHTML=fmtV(instAvg)+'<span class="u"> km/h</span>';
+  $('vTime').textContent=fmtT(el);
+  $('vDist').innerHTML=fmtKm(d)+'<span class="u"> km</span>';
+  $('vTarget').innerHTML=fmtV(seg.v)+'<span class="u"> km/h</span>';
+  $('barFill').style.width=Math.min(100,d/total*100)+'%';
+  const nc=nextChange(ss,d);
+  $('vNext').innerHTML=nc?(Math.max(0,Math.round((nc.km-d)*1000))+'<span class="u"> m · km '+fmtKm(nc.km)+'</span>'):'<span class="u">nessuno</span>';
+  if(run.state==='idle'){
+    setStatus('', 'In attesa', '--', 'Premi VIA sulla linea di partenza (linea arancione ET)');
+    $('vAvg').innerHTML='--<span class="u"> km/h</span>'; $('vKeep').innerHTML='--<span class="u"> km/h</span>'; return;
+  }
+  const avg=el>1&&d>0?d/(el/3600):0;
+  $('vAvg').innerHTML=fmtV(avg)+'<span class="u"> km/h</span>';
+  const ideal=targetTime(ss,d), delta=el-ideal;          /* + = in ritardo */
+  /* velocità per tornare in media entro la fine del tratto in corso (prossimo cambio o fine prova) */
+  const rem=seg.to-d, remT=targetTime(ss,seg.to)-el;
+  const keep=(remT>1&&rem>0)?rem/(remT/3600):NaN;
+  $('vKeep').innerHTML=fmtV(keep)+'<span class="u"> km/h</span>';
+  const j=judge(delta,TOL);
+  const lab={ok:'Nella media',late:'Sotto media',early:'Sopra media'}[j];
+  const hint={ok:'Continua così',late:'In ritardo: accelera',early:'In anticipo: rallenta'}[j];
+  /* a schermo: + = sopra media (in anticipo, rallenta), − = sotto media (in ritardo, accelera) */
+  const shown=-delta, sign=shown>0.05?'+':(shown<-0.05?'−':'');
+  if(run.state==='finished'){ setStatus(j, 'Finita · '+lab, sign+Math.abs(delta).toFixed(1).replace('.',',')+' s', 'Media effettiva '+fmtV(avg)+' km/h su '+fmtKm(d)+' km'); }
+  else setStatus(j, lab, sign+Math.abs(delta).toFixed(1).replace('.',',')+' s', hint);
+}
+function setStatus(cls,lab,delta,hint){ const s=$('status'); s.className=cls; $('stLab').textContent=lab; $('stDelta').textContent=delta; $('stHint').textContent=hint; }
+
+/* ===== COMANDI ===== */
+$('btnGo').onclick=()=>{
+  if(run.state==='idle'){ run.state='running'; run.t0=Date.now(); run.dist=0; run.lastFixT=Date.now(); if(navigator.vibrate) navigator.vibrate(60); }
+  else if(run.state==='running'){ run.finishT=Date.now(); run.state='finished'; }
+  else { resetRun(); }
+  $('btnGo').textContent=run.state==='running'?'FINE':(run.state==='finished'?'NUOVA':'VIA');
+  $('btnGo').classList.toggle('stop',run.state==='running');
+};
+$('btnReset').onclick=()=>{ resetRun(); $('btnGo').textContent='VIA'; $('btnGo').classList.remove('stop'); tick(); };
+$('btnMinus').onclick=()=>{ run.dist=Math.max(0,run.dist-0.010); tick(); };
+$('btnPlus').onclick=()=>{ run.dist+=0.010; tick(); };
+$('btnSync').onclick=()=>{               /* aggancia al prossimo cambio media (punto indicato in circolare) */
+  if(run.state!=='running') return;
+  const nc=nextChange(segs(),run.dist); if(nc){ run.dist=nc.km; if(navigator.vibrate) navigator.vibrate(40); tick(); }
+};
+/* ===== CALIBRA ===== */
+function calK(){ const ref=parseFloat(String($('calRef').value).replace(',','.')); return (cal.raw>0.2&&ref>0)?ref/cal.raw:NaN; }
+function calRender(){
+  $('kNow').textContent=K.toFixed(4).replace('.',',');
+  $('calRaw').innerHTML=fmtKm(cal.raw)+'<span class="u"> km</span>';
+  const k=calK(); $('calK').textContent=isFinite(k)?k.toFixed(4).replace('.',','):'--';
+  $('calGo').textContent=cal.on?'FINE':'INIZIA'; $('calGo').classList.toggle('stop',cal.on);
+}
+$('calGo').onclick=()=>{ if(!cal.on){ cal.raw=0; cal.on=true; } else cal.on=false; if(navigator.vibrate) navigator.vibrate(50); calRender(); };
+$('calApply').onclick=()=>{
+  const k=calK();
+  if(!isFinite(k)){ alert('Prima misura almeno 200 m con INIZIA e FINE.'); return; }
+  if(k<0.9||k>1.1){ if(!confirm('Coefficiente '+k.toFixed(4)+': più del 10% di differenza, forse la misura è sbagliata. Lo uso lo stesso?')) return; }
+  K=k; store.set('k',K); calRender();
+};
+$('calClear').onclick=()=>{ K=1; store.set('k',1); calRender(); };
+$('calRef').onchange=calRender;
+
+$('cat').onchange=e=>{ cat=+e.target.value; store.set('cat',cat); render(); };
+$('off').onchange=e=>{ off=+e.target.value||0; store.set('off',off); render(); };
+
+/* ===== AVVIO ===== */
+cur=PM.find(p=>p.id===+store.get('pm',0))||pickDefault();
+render(); startGps(); setInterval(tick,100);
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>

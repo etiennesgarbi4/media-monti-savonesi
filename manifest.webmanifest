@@ -1,0 +1,10 @@
+{
+  "name": "Media Monti Savonesi",
+  "short_name": "Media MS26",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12272a",
+  "theme_color": "#12272a"
+}
