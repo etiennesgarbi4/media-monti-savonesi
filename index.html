@@ -273,7 +273,7 @@ function tick(){
   const nc=nextChange(ss,d);
   $('vNext').innerHTML=nc?(Math.max(0,Math.round((nc.km-d)*1000))+'<span class="u"> m · km '+fmtKm(nc.km)+'</span>'):'<span class="u">nessuno</span>';
   if(run.state==='idle'){
-    setStatus('', 'In attesa', '--', 'Premi VIA sulla linea di partenza (linea arancione ET)');
+    setStatus('', 'In attesa', '--', 'Premi VIA quando passi la partenza della prova');
     $('vAvg').innerHTML='--<span class="u"> km/h</span>'; $('vKeep').innerHTML='--<span class="u"> km/h</span>'; return;
   }
   const avg=el>1&&d>0?d/(el/3600):0;

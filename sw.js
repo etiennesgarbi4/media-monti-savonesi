@@ -1,5 +1,5 @@
 /* Copia locale dell'app: dopo la prima apertura con internet si apre anche senza campo. */
-const CACHE='media-ms26-v1';
+const CACHE='media-ms26-v2';
 const CORE=['./','./index.html','./manifest.webmanifest'];
 
 self.addEventListener('install',e=>{
